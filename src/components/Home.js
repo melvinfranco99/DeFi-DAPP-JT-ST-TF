@@ -118,6 +118,13 @@ class App extends Component {
     }*/
   }
 
+  transfer = (address_to, amount_transfer) => {
+    this.setState({ loading: true })
+    this.state.jamToken.methods.transfer(address_to, amount_transfer).send({ from: this.state.account }).on('transactionHash', (hash) => {
+      this.setState({ loading: false })
+    })
+  }
+
 
   stakeTokens = (amount) => {
     this.setState({ loading: true })
@@ -180,7 +187,7 @@ class App extends Component {
     if (this.state.loading) {
       contenido = <p id="loader" className='text-center'>Loading...</p>
     } else {
-      contenido = <div className="content mr-auto ml-auto card text-center">
+      contenido = <div className="content mr-auto ml-auto card">
         <table className='table table-borderless text-muted text-center'>
           <thead>
             <tr>
@@ -196,7 +203,7 @@ class App extends Component {
             </tr>
           </tbody>
         </table>
-        <div className=' mb-4'>
+        <div className='card mb-4'>
           <div className='card-body'>
             <form className='mb-3' onSubmit={(event) => {
               event.preventDefault()
@@ -244,7 +251,6 @@ class App extends Component {
     return (
       <div>
         <Navigation account={this.state.account} />
-        {/**<MyCarousel />*/}
         <div className="container-fluid mt-5">
           <div className="row">
             <main role="main" className="col-lg-12 d-flex text-center">
@@ -267,17 +273,71 @@ class App extends Component {
                 <div className="content mr-auto ml-auto card">
                   <h3>Datos del TokenFarm</h3>
                   <span>cuenta: {this.state.account}</span> <br></br>
-                  <span>Staking Balance de la cuenta conectada: {this.state.tokenFarmStakingBalanceCuenta0.toString()}</span>
+                  <span>Staking Balance de la cuenta conectada: {this.state.tokenFarmStakingBalanceCuenta0}</span>
                   <br></br>
                   <span>nombre del contrato que hemos llamado: {this.state.tokenFarmName}</span>
                 </div>
 
               </div>
 
+              <div>
+                <div className="content mr-auto ml-auto card">
+                  <h3>Transferencia</h3>
+                  <form className='mb-3' onSubmit={(event) => {
+                    event.preventDefault()
+                    let address_transfer
+                    address_transfer = this.input1.value.toString()
+                    let amount_transfer
+                    amount_transfer = this.input2.value.toString()
+                    console.log('direccionde envio', address_transfer, '. Cantidad enviada: ', amount_transfer)
+                    this.transfer(address_transfer, amount_transfer)
+                  }}>
+                    <div>
+                      <label className='float-left'>
+                        <b>Transfer</b>
+                      </label>
+                      <br></br>
+                      <span className='float-right text-muted'>
+                        Balance: {this.state.jamTokenBalance} JAM
+                      </span>
+                    </div>
+                    <br></br>
+                    <div className='input-group mb-4 '>
+                      <label>Direccion: </label>
+                      <input
+                        type="text"
+                        ref={(input1) => { this.input1 = input1 }}
+                        className='form-control form-control-md'
+                        placeholder='0x0'
+                        required
+                      />
+
+                      <label>
+                        Cantidad:
+                      </label>
+                      <input
+                        type="text"
+                        ref={(input2) => { this.input2 = input2 }}
+                        className='form-control form-control-md'
+                        placeholder='0'
+                        required
+                      />
+                      <div className='input-group-append'>
+                        <div className='input-group-text'>
+                          <span>JAM</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" className='btn btn-primary btn-block btn-lg'>TRANSFER!</button>
+
+                  </form>
+                </div>
+              </div>
+
               {contenido}
 
               <div className='content card'>
-                <span>Cuenta principal: {this.state.account} <br></br>Solamente si estoy en la cuenta principal podré llamar a la siguiente funcion.</span> <br></br><br></br>
+                <span>Cuenta principal: {this.state.account} <br></br>Solamente si estoy en esta cuenta podré llamar a la siguiente funcion.</span> <br></br><br></br>
                 <button className='btn btn-success' type='submit'
                   onClick={(event) => {
                     event.preventDefault()
@@ -290,9 +350,9 @@ class App extends Component {
 
 
             </main>
-          </div>
-        </div>
-      </div>
+          </div >
+        </div >
+      </div >
     );
   }
 }
